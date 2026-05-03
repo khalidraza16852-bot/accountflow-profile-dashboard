@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="google-client-id" content="PASTE_YOUR_GOOGLE_CLIENT_ID_HERE" />
+    <meta name="google-client-id" content="565513527122-qm3s79kckgt8ajcord4obnahl0hj0t59.apps.googleusercontent.com" />
     <title>AccountFlow UI</title>
     <link rel="stylesheet" href="styles.css" />
     <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -66,6 +66,7 @@
               <a href="#">Forgot password?</a>
             </div>
             <button class="primary-button" type="submit">Log in</button>
+            <p class="login-message" id="loginMessage" role="status" aria-live="polite"></p>
           </form>
         </div>
       </section>
@@ -189,6 +190,27 @@
                   <span class="input-wrap">
                     <svg><use href="#icon-phone"></use></svg>
                     <input id="phone" name="phone" type="tel" placeholder="Enter phone number" />
+                  </span>
+                </label>
+                <label class="field">
+                  <span>Father name</span>
+                  <span class="input-wrap">
+                    <svg><use href="#icon-user"></use></svg>
+                    <input id="fatherName" name="fatherName" type="text" placeholder="Enter father name" />
+                  </span>
+                </label>
+                <label class="field">
+                  <span>Mother name</span>
+                  <span class="input-wrap">
+                    <svg><use href="#icon-user"></use></svg>
+                    <input id="motherName" name="motherName" type="text" placeholder="Enter mother name" />
+                  </span>
+                </label>
+                <label class="field">
+                  <span>Class section</span>
+                  <span class="input-wrap">
+                    <svg><use href="#icon-dashboard"></use></svg>
+                    <input id="classSection" name="classSection" type="text" placeholder="Enter class / section" />
                   </span>
                 </label>
                 <label class="field">

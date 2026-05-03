@@ -8,6 +8,8 @@ const sidebar = document.querySelector("#sidebar");
 const profileForm = document.querySelector("#profileForm");
 const saveMessage = document.querySelector("#saveMessage");
 const loginEmail = document.querySelector("#loginEmail");
+const loginPassword = document.querySelector("#loginPassword");
+const loginMessage = document.querySelector("#loginMessage");
 const googleMessage = document.querySelector("#googleMessage");
 const navItems = document.querySelectorAll("[data-view]");
 const pageViews = document.querySelectorAll(".page-view");
@@ -30,9 +32,13 @@ const openProfileButtons = document.querySelectorAll("[data-open-profile]");
 const printProfileButtons = document.querySelectorAll("#printProfile, [data-print-profile]");
 const profileStoragePrefix = "accountflow-profile";
 const accountsStorageKey = "accountflow-accounts";
+const credentialsStorageKey = "accountflow-credentials";
 const editableFields = [
   "fullName",
   "phone",
+  "fatherName",
+  "motherName",
+  "classSection",
   "governmentId",
   "dateOfBirth",
   "gender",
@@ -64,6 +70,76 @@ const pageCopy = {
 
 function accountKey(email) {
   return `${profileStoragePrefix}:${encodeURIComponent(email.toLowerCase())}`;
+}
+
+function bytesToHex(bytes) {
+  return [...bytes].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+function hexToBytes(hex) {
+  return new Uint8Array(hex.match(/.{1,2}/g).map((byte) => parseInt(byte, 16)));
+}
+
+async function hashPassword(password, saltHex) {
+  const encoder = new TextEncoder();
+  const passwordKey = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(password),
+    "PBKDF2",
+    false,
+    ["deriveBits"]
+  );
+  const bits = await crypto.subtle.deriveBits(
+    {
+      name: "PBKDF2",
+      salt: hexToBytes(saltHex),
+      iterations: 120000,
+      hash: "SHA-256",
+    },
+    passwordKey,
+    256
+  );
+
+  return bytesToHex(new Uint8Array(bits));
+}
+
+function readCredentials() {
+  return JSON.parse(localStorage.getItem(credentialsStorageKey) || "{}");
+}
+
+function writeCredentials(credentials) {
+  localStorage.setItem(credentialsStorageKey, JSON.stringify(credentials));
+}
+
+async function verifyOrCreateAccount(email, password) {
+  const normalizedEmail = email.trim().toLowerCase();
+  const credentials = readCredentials();
+  const existingCredential = credentials[normalizedEmail];
+
+  if (!normalizedEmail || !password) {
+    return { ok: false, message: "Enter email and password." };
+  }
+
+  if (!existingCredential) {
+    const salt = new Uint8Array(16);
+    crypto.getRandomValues(salt);
+    const saltHex = bytesToHex(salt);
+    credentials[normalizedEmail] = {
+      salt: saltHex,
+      passwordHash: await hashPassword(password, saltHex),
+      createdAt: new Date().toISOString(),
+    };
+    writeCredentials(credentials);
+    return { ok: true, email: normalizedEmail, created: true };
+  }
+
+  const passwordHash = await hashPassword(password, existingCredential.salt);
+
+  if (passwordHash !== existingCredential.passwordHash) {
+    return { ok: false, message: "Wrong email or password." };
+  }
+
+  return { ok: true, email: normalizedEmail, created: false };
 }
 
 function readProfile(email = currentEmail) {
@@ -252,6 +328,9 @@ function downloadPersonalInformation(profile) {
     ["Email", profile.email || ""],
     ["Full name", profile.fullName || ""],
     ["Phone number", profile.phone || ""],
+    ["Father name", profile.fatherName || ""],
+    ["Mother name", profile.motherName || ""],
+    ["Class section", profile.classSection || ""],
     ["Government ID / ID number", profile.governmentId || ""],
     ["Date of birth", profile.dateOfBirth || ""],
     ["Gender", profile.gender || ""],
@@ -279,22 +358,27 @@ function downloadPersonalInformation(profile) {
   URL.revokeObjectURL(link.href);
 }
 
-function signIn(email) {
-  currentEmail = email.trim().toLowerCase();
+async function signIn(email, password) {
+  loginMessage.textContent = "";
+  loginMessage.classList.remove("error");
 
-  if (!currentEmail) {
-    loginEmail.focus();
+  const result = await verifyOrCreateAccount(email, password);
+
+  if (!result.ok) {
+    loginMessage.textContent = result.message;
+    loginMessage.classList.add("error");
     return;
   }
 
+  currentEmail = result.email;
   showDashboard();
   setView("dashboardView");
   loadProfile();
 }
 
-loginForm.addEventListener("submit", (event) => {
+loginForm.addEventListener("submit", async (event) => {
   event.preventDefault();
-  signIn(loginEmail.value);
+  await signIn(loginEmail.value, loginPassword.value);
 });
 
 googleLogin.addEventListener("click", () => {
