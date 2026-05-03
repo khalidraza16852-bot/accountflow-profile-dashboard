@@ -184,6 +184,12 @@ svg {
   height: 22px;
 }
 
+.google-button-mount {
+  display: flex;
+  justify-content: center;
+  margin-top: 12px;
+}
+
 .divider {
   display: flex;
   align-items: center;

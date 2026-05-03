@@ -11,6 +11,7 @@ const loginEmail = document.querySelector("#loginEmail");
 const loginPassword = document.querySelector("#loginPassword");
 const loginMessage = document.querySelector("#loginMessage");
 const googleMessage = document.querySelector("#googleMessage");
+const googleButtonMount = document.querySelector("#googleButtonMount");
 const navItems = document.querySelectorAll("[data-view]");
 const pageViews = document.querySelectorAll(".page-view");
 const pageEyebrow = document.querySelector("#pageEyebrow");
@@ -52,6 +53,8 @@ const editableFields = [
 let currentEmail = "";
 let currentAvatar = "";
 let googleSignInReady = false;
+let googleButtonRendered = false;
+const googleNonceKey = "accountflow-google-nonce";
 
 const pageCopy = {
   dashboardView: {
@@ -172,34 +175,95 @@ function decodeGoogleCredential(credential) {
   return JSON.parse(decodedPayload);
 }
 
+function signInWithGoogleProfile(googleProfile) {
+  const email = googleProfile.email || "";
+  const profile = readProfile(email);
+
+  if (googleProfile.name && !profile.fullName) {
+    profile.fullName = googleProfile.name;
+  }
+
+  if (googleProfile.picture && !profile.avatar) {
+    profile.avatar = googleProfile.picture;
+  }
+
+  currentEmail = email.toLowerCase();
+  writeProfile({ ...profile, email: currentEmail });
+  showDashboard();
+  setView("dashboardView");
+  loadProfile();
+}
+
+function startGoogleRedirectSignIn() {
+  if (!hasGoogleClientId()) {
+    googleMessage.textContent = "Add your Google Client ID in index.html to connect real Gmail sign-in.";
+    return;
+  }
+
+  const nonce = crypto.randomUUID();
+  const params = new URLSearchParams({
+    client_id: googleClientId(),
+    redirect_uri: window.location.origin + window.location.pathname,
+    response_type: "id_token",
+    scope: "openid email profile",
+    nonce,
+    prompt: "select_account",
+  });
+
+  sessionStorage.setItem(googleNonceKey, nonce);
+  window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+}
+
+function handleGoogleRedirectResponse() {
+  const hashParams = new URLSearchParams(window.location.hash.slice(1));
+  const idToken = hashParams.get("id_token");
+
+  if (!idToken) {
+    return;
+  }
+
+  const googleProfile = decodeGoogleCredential(idToken);
+  const expectedNonce = sessionStorage.getItem(googleNonceKey);
+
+  if (expectedNonce && googleProfile.nonce !== expectedNonce) {
+    googleMessage.textContent = "Google sign-in failed security check. Please try again.";
+    return;
+  }
+
+  sessionStorage.removeItem(googleNonceKey);
+  history.replaceState(null, "", window.location.pathname);
+  signInWithGoogleProfile(googleProfile);
+}
+
 function initializeGoogleSignIn() {
   if (!hasGoogleClientId() || !window.google?.accounts?.id) {
     return;
   }
 
-  window.google.accounts.id.initialize({
-    client_id: googleClientId(),
-    callback: (response) => {
-      const googleProfile = decodeGoogleCredential(response.credential);
-      const email = googleProfile.email || "";
-      const profile = readProfile(email);
+  try {
+    window.google.accounts.id.initialize({
+      client_id: googleClientId(),
+      callback: (response) => {
+        signInWithGoogleProfile(decodeGoogleCredential(response.credential));
+      },
+    });
 
-      if (googleProfile.name && !profile.fullName) {
-        profile.fullName = googleProfile.name;
-      }
+    if (!googleButtonRendered) {
+      window.google.accounts.id.renderButton(googleButtonMount, {
+        shape: "pill",
+        size: "large",
+        text: "signin_with",
+        theme: "outline",
+        width: 330,
+      });
+      googleButtonRendered = true;
+    }
 
-      if (googleProfile.picture && !profile.avatar) {
-        profile.avatar = googleProfile.picture;
-      }
-
-      currentEmail = email.toLowerCase();
-      writeProfile({ ...profile, email: currentEmail });
-      showDashboard();
-      setView("dashboardView");
-      loadProfile();
-    },
-  });
-  googleSignInReady = true;
+    googleSignInReady = true;
+    googleMessage.textContent = "";
+  } catch (error) {
+    googleMessage.textContent = "Google sign-in setup failed. Check that localhost:3000 is added in Google Cloud.";
+  }
 }
 
 function writeProfile(profile) {
@@ -387,15 +451,8 @@ googleLogin.addEventListener("click", () => {
     return;
   }
 
-  initializeGoogleSignIn();
-
-  if (!googleSignInReady) {
-    googleMessage.textContent = "Google sign-in is still loading. Try again in a moment.";
-    return;
-  }
-
-  googleMessage.textContent = "";
-  window.google.accounts.id.prompt();
+  googleMessage.textContent = "Opening Google sign-in...";
+  startGoogleRedirectSignIn();
 });
 
 logoutLink.addEventListener("click", (event) => {
@@ -479,4 +536,5 @@ printProfileButtons.forEach((button) => {
   });
 });
 
+handleGoogleRedirectResponse();
 window.addEventListener("load", initializeGoogleSignIn);
