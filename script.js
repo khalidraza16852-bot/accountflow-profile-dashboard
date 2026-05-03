@@ -26,6 +26,7 @@ const summaryEmail = document.querySelector("#summaryEmail");
 const summaryId = document.querySelector("#summaryId");
 const summaryStatus = document.querySelector("#summaryStatus");
 const openProfileButtons = document.querySelectorAll("[data-open-profile]");
+const printProfileButtons = document.querySelectorAll("#printProfile, [data-print-profile]");
 const profileStoragePrefix = "accountflow-profile";
 const accountsStorageKey = "accountflow-accounts";
 const editableFields = [
@@ -282,4 +283,14 @@ profileForm.addEventListener("submit", (event) => {
   window.setTimeout(() => {
     saveMessage.textContent = "";
   }, 2600);
+});
+
+printProfileButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    const profile = collectProfile();
+    writeProfile(profile);
+    updateAccountUI(profile);
+    setView("profileView");
+    window.print();
+  });
 });

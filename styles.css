@@ -157,6 +157,7 @@ svg {
 
 .google-button,
 .primary-button,
+.secondary-button,
 .icon-button {
   border: 0;
   cursor: pointer;
@@ -289,6 +290,24 @@ textarea {
   box-shadow: 0 16px 30px rgba(37, 99, 235, 0.28);
   font-weight: 800;
   padding: 0 22px;
+}
+
+.secondary-button {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(37, 99, 235, 0.24);
+  border-radius: 14px;
+  color: var(--blue-dark);
+  background: #fff;
+  box-shadow: 8px 8px 18px rgba(148, 163, 184, 0.14), -7px -7px 18px rgba(255, 255, 255, 0.9);
+  font-weight: 800;
+  padding: 0 18px;
+}
+
+.mobile-print {
+  display: none;
 }
 
 .dashboard-screen {
@@ -829,6 +848,10 @@ textarea {
     display: none;
   }
 
+  .section-heading .print-profile {
+    display: none;
+  }
+
   .form-grid,
   .address-grid {
     grid-template-columns: 1fr;
@@ -843,6 +866,11 @@ textarea {
   }
 
   .update-button {
+    width: 100%;
+  }
+
+  .mobile-print {
+    display: inline-flex;
     width: 100%;
   }
 }
@@ -864,5 +892,67 @@ textarea {
   .icon-button {
     width: 42px;
     height: 42px;
+  }
+}
+
+@media print {
+  body {
+    background: #fff;
+  }
+
+  .login-screen,
+  .sidebar,
+  .topbar,
+  .dashboard-hero,
+  .summary-grid,
+  .settings-layout,
+  .save-top,
+  .print-profile,
+  .update-button,
+  .document-upload,
+  .edit-avatar,
+  .save-message {
+    display: none !important;
+  }
+
+  .dashboard-screen,
+  .content-area,
+  .page-view.active-view,
+  #profileView,
+  .dashboard-grid {
+    display: block !important;
+    min-height: auto;
+    padding: 0;
+  }
+
+  #dashboardView,
+  #settingsView {
+    display: none !important;
+  }
+
+  .profile-card {
+    box-shadow: none;
+    border: 1px solid #d7dde8;
+    background: #fff;
+  }
+
+  .avatar-panel {
+    margin-bottom: 18px;
+  }
+
+  .profile-form {
+    padding: 20px;
+  }
+
+  .form-grid,
+  .address-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .input-wrap,
+  .textarea-wrap,
+  .address-section {
+    box-shadow: none;
+    background: #fff;
   }
 }
