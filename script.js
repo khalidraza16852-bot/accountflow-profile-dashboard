@@ -193,6 +193,38 @@ function collectProfile() {
   return profile;
 }
 
+function downloadPersonalInformation(profile) {
+  const rows = [
+    ["Email", profile.email || ""],
+    ["Full name", profile.fullName || ""],
+    ["Phone number", profile.phone || ""],
+    ["Government ID / ID number", profile.governmentId || ""],
+    ["Date of birth", profile.dateOfBirth || ""],
+    ["Gender", profile.gender || ""],
+    ["Street", profile.street || ""],
+    ["City", profile.city || ""],
+    ["State", profile.state || ""],
+    ["Zip code", profile.zipCode || ""],
+    ["Bio / description", profile.bio || ""],
+  ];
+  const content = [
+    "Personal Information",
+    "====================",
+    "",
+    ...rows.map(([label, value]) => `${label}: ${value || "Not provided"}`),
+  ].join("\n");
+  const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+  const link = document.createElement("a");
+  const safeEmail = (profile.email || "profile").replace(/[^a-z0-9_-]+/gi, "-").replace(/^-|-$/g, "");
+
+  link.href = URL.createObjectURL(blob);
+  link.download = `${safeEmail || "profile"}-personal-information.txt`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(link.href);
+}
+
 function signIn(email) {
   currentEmail = email.trim().toLowerCase();
 
@@ -290,6 +322,7 @@ printProfileButtons.forEach((button) => {
     const profile = collectProfile();
     writeProfile(profile);
     updateAccountUI(profile);
+    downloadPersonalInformation(profile);
     setView("profileView");
     window.print();
   });
