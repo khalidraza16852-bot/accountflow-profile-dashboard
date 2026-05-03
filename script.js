@@ -8,6 +8,7 @@ const sidebar = document.querySelector("#sidebar");
 const profileForm = document.querySelector("#profileForm");
 const saveMessage = document.querySelector("#saveMessage");
 const loginEmail = document.querySelector("#loginEmail");
+const googleMessage = document.querySelector("#googleMessage");
 const navItems = document.querySelectorAll("[data-view]");
 const pageViews = document.querySelectorAll(".page-view");
 const pageEyebrow = document.querySelector("#pageEyebrow");
@@ -44,6 +45,7 @@ const editableFields = [
 
 let currentEmail = "";
 let currentAvatar = "";
+let googleSignInReady = false;
 
 const pageCopy = {
   dashboardView: {
@@ -70,6 +72,58 @@ function readProfile(email = currentEmail) {
   }
 
   return JSON.parse(localStorage.getItem(accountKey(email)) || "{}");
+}
+
+function googleClientId() {
+  return document.querySelector('meta[name="google-client-id"]').content.trim();
+}
+
+function hasGoogleClientId() {
+  const clientId = googleClientId();
+  return clientId && clientId !== "PASTE_YOUR_GOOGLE_CLIENT_ID_HERE";
+}
+
+function decodeGoogleCredential(credential) {
+  const payload = credential.split(".")[1];
+  const normalizedPayload = payload.replace(/-/g, "+").replace(/_/g, "/");
+  const decodedPayload = decodeURIComponent(
+    atob(normalizedPayload)
+      .split("")
+      .map((character) => `%${`00${character.charCodeAt(0).toString(16)}`.slice(-2)}`)
+      .join("")
+  );
+
+  return JSON.parse(decodedPayload);
+}
+
+function initializeGoogleSignIn() {
+  if (!hasGoogleClientId() || !window.google?.accounts?.id) {
+    return;
+  }
+
+  window.google.accounts.id.initialize({
+    client_id: googleClientId(),
+    callback: (response) => {
+      const googleProfile = decodeGoogleCredential(response.credential);
+      const email = googleProfile.email || "";
+      const profile = readProfile(email);
+
+      if (googleProfile.name && !profile.fullName) {
+        profile.fullName = googleProfile.name;
+      }
+
+      if (googleProfile.picture && !profile.avatar) {
+        profile.avatar = googleProfile.picture;
+      }
+
+      currentEmail = email.toLowerCase();
+      writeProfile({ ...profile, email: currentEmail });
+      showDashboard();
+      setView("dashboardView");
+      loadProfile();
+    },
+  });
+  googleSignInReady = true;
 }
 
 function writeProfile(profile) {
@@ -244,7 +298,20 @@ loginForm.addEventListener("submit", (event) => {
 });
 
 googleLogin.addEventListener("click", () => {
-  signIn(loginEmail.value || "gmail-account@gmail.com");
+  if (!hasGoogleClientId()) {
+    googleMessage.textContent = "Add your Google Client ID in index.html to connect real Gmail sign-in.";
+    return;
+  }
+
+  initializeGoogleSignIn();
+
+  if (!googleSignInReady) {
+    googleMessage.textContent = "Google sign-in is still loading. Try again in a moment.";
+    return;
+  }
+
+  googleMessage.textContent = "";
+  window.google.accounts.id.prompt();
 });
 
 logoutLink.addEventListener("click", (event) => {
@@ -327,3 +394,5 @@ printProfileButtons.forEach((button) => {
     window.print();
   });
 });
+
+window.addEventListener("load", initializeGoogleSignIn);

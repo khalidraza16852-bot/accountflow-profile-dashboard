@@ -201,6 +201,15 @@ svg {
   background: var(--line);
 }
 
+.google-message {
+  min-height: 18px;
+  margin: 10px 0 0;
+  color: var(--blue-dark);
+  font-size: 13px;
+  font-weight: 750;
+  line-height: 1.4;
+}
+
 .login-form,
 .profile-form {
   display: grid;

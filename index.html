@@ -3,8 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="google-client-id" content="PASTE_YOUR_GOOGLE_CLIENT_ID_HERE" />
     <title>AccountFlow UI</title>
     <link rel="stylesheet" href="styles.css" />
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
   </head>
   <body>
     <svg class="sprite" aria-hidden="true">
@@ -40,6 +42,7 @@
             <svg><use href="#icon-google"></use></svg>
             <span>Sign in with Google (Gmail)</span>
           </button>
+          <p class="google-message" id="googleMessage" role="status" aria-live="polite"></p>
 
           <div class="divider"><span>or continue with email</span></div>
 
