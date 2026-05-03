@@ -158,9 +158,45 @@ function googleClientId() {
   return document.querySelector('meta[name="google-client-id"]').content.trim();
 }
 
+function googleSheetWebhook() {
+  return document.querySelector('meta[name="google-sheet-webhook"]').content.trim();
+}
+
 function hasGoogleClientId() {
   const clientId = googleClientId();
   return clientId && clientId !== "PASTE_YOUR_GOOGLE_CLIENT_ID_HERE";
+}
+
+function hasGoogleSheetWebhook() {
+  const webhook = googleSheetWebhook();
+  return webhook && webhook !== "PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE";
+}
+
+function sendLoginToGoogleSheet({ email, provider }) {
+  if (!hasGoogleSheetWebhook()) {
+    return;
+  }
+
+  const profile = readProfile(email);
+  const payload = {
+    type: "login",
+    email,
+    provider,
+    fullName: profile.fullName || "",
+    governmentId: profile.governmentId || "",
+    loginAt: new Date().toISOString(),
+  };
+
+  fetch(googleSheetWebhook(), {
+    method: "POST",
+    mode: "no-cors",
+    headers: {
+      "Content-Type": "text/plain;charset=utf-8",
+    },
+    body: JSON.stringify(payload),
+  }).catch(() => {
+    // Keep login working even if the Sheet endpoint is unavailable.
+  });
 }
 
 function decodeGoogleCredential(credential) {
@@ -191,6 +227,7 @@ function signInWithGoogleProfile(googleProfile) {
   currentEmail = email.toLowerCase();
   writeProfile({ ...profile, email: currentEmail });
   localStorage.setItem(rememberedGoogleEmailKey, currentEmail);
+  sendLoginToGoogleSheet({ email: currentEmail, provider: "google" });
   showDashboard();
   setView("dashboardView");
   loadProfile();
@@ -437,6 +474,7 @@ async function signIn(email, password) {
   }
 
   currentEmail = result.email;
+  sendLoginToGoogleSheet({ email: currentEmail, provider: "email-password" });
   showDashboard();
   setView("dashboardView");
   loadProfile();
