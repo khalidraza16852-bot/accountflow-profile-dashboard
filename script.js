@@ -34,6 +34,7 @@ const printProfileButtons = document.querySelectorAll("#printProfile, [data-prin
 const profileStoragePrefix = "accountflow-profile";
 const accountsStorageKey = "accountflow-accounts";
 const credentialsStorageKey = "accountflow-credentials";
+const rememberedGoogleEmailKey = "accountflow-remembered-google-email";
 const editableFields = [
   "fullName",
   "phone",
@@ -189,6 +190,7 @@ function signInWithGoogleProfile(googleProfile) {
 
   currentEmail = email.toLowerCase();
   writeProfile({ ...profile, email: currentEmail });
+  localStorage.setItem(rememberedGoogleEmailKey, currentEmail);
   showDashboard();
   setView("dashboardView");
   loadProfile();
@@ -457,6 +459,7 @@ googleLogin.addEventListener("click", () => {
 
 logoutLink.addEventListener("click", (event) => {
   event.preventDefault();
+  localStorage.removeItem(rememberedGoogleEmailKey);
   showLogin();
 });
 
@@ -537,4 +540,17 @@ printProfileButtons.forEach((button) => {
 });
 
 handleGoogleRedirectResponse();
-window.addEventListener("load", initializeGoogleSignIn);
+window.addEventListener("load", () => {
+  initializeGoogleSignIn();
+
+  if (dashboardScreen.classList.contains("hidden")) {
+    const rememberedEmail = localStorage.getItem(rememberedGoogleEmailKey);
+
+    if (rememberedEmail) {
+      currentEmail = rememberedEmail;
+      showDashboard();
+      setView("dashboardView");
+      loadProfile();
+    }
+  }
+});
