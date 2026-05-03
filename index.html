@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AccountFlow UI</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <svg class="sprite" aria-hidden="true">
+      <symbol id="icon-mail" viewBox="0 0 24 24"><path d="M4 6h16v12H4z"/><path d="m4 7 8 6 8-6"/></symbol>
+      <symbol id="icon-lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></symbol>
+      <symbol id="icon-google" viewBox="0 0 24 24"><path d="M21.6 12.2c0-.7-.1-1.4-.2-2H12v3.9h5.4a4.6 4.6 0 0 1-2 3v2.5h3.2c1.9-1.7 3-4.3 3-7.4Z"/><path d="M12 22c2.7 0 5-0.9 6.6-2.4l-3.2-2.5c-.9.6-2 .9-3.4.9a5.9 5.9 0 0 1-5.5-4.1H3.2v2.6A10 10 0 0 0 12 22Z"/><path d="M6.5 13.9a6 6 0 0 1 0-3.8V7.5H3.2a10 10 0 0 0 0 9l3.3-2.6Z"/><path d="M12 6c1.5 0 2.8.5 3.8 1.5l2.8-2.8A9.6 9.6 0 0 0 12 2a10 10 0 0 0-8.8 5.5l3.3 2.6A5.9 5.9 0 0 1 12 6Z"/></symbol>
+      <symbol id="icon-dashboard" viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="5" rx="2"/><rect x="13" y="10" width="8" height="11" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/></symbol>
+      <symbol id="icon-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+      <symbol id="icon-settings" viewBox="0 0 24 24"><path d="M12 15.5A3.5 3.5 0 1 0 12 8a3.5 3.5 0 0 0 0 7.5Z"/><path d="m19 13.5 1.4 1.1-2 3.4-1.7-.7a7 7 0 0 1-1.7 1l-.2 1.8H9.2L9 18.3a7 7 0 0 1-1.7-1l-1.7.7-2-3.4L5 13.5a7.8 7.8 0 0 1 0-2L3.6 10.4l2-3.4 1.7.7a7 7 0 0 1 1.7-1l.2-1.8h5.6l.2 1.8a7 7 0 0 1 1.7 1l1.7-.7 2 3.4-1.4 1.1a7.8 7.8 0 0 1 0 2Z"/></symbol>
+      <symbol id="icon-log-out" viewBox="0 0 24 24"><path d="M10 17 15 12l-5-5"/><path d="M15 12H3"/><path d="M13 4h5a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-5"/></symbol>
+      <symbol id="icon-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></symbol>
+      <symbol id="icon-camera" viewBox="0 0 24 24"><path d="M4 8h4l2-3h4l2 3h4v11H4z"/><circle cx="12" cy="13.5" r="3.5"/></symbol>
+      <symbol id="icon-phone" viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.9a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5c.9.3 1.9.6 2.9.7a2 2 0 0 1 1.7 2Z"/></symbol>
+      <symbol id="icon-map" viewBox="0 0 24 24"><path d="M9 18 3 21V6l6-3 6 3 6-3v15l-6 3z"/><path d="M9 3v15"/><path d="M15 6v15"/></symbol>
+      <symbol id="icon-id" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M6 16c.7-1.4 1.8-2 3-2s2.3.6 3 2"/><path d="M14 10h4"/><path d="M14 14h4"/></symbol>
+      <symbol id="icon-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4"/><path d="M8 3v4"/><path d="M3 11h18"/></symbol>
+      <symbol id="icon-upload" viewBox="0 0 24 24"><path d="M12 16V4"/><path d="m7 9 5-5 5 5"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></symbol>
+      <symbol id="icon-save" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></symbol>
+      <symbol id="icon-menu" viewBox="0 0 24 24"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></symbol>
+    </svg>
+
+    <main class="app-shell">
+      <section class="login-screen" id="loginScreen" aria-label="Login">
+        <div class="ambient ambient-one"></div>
+        <div class="ambient ambient-two"></div>
+        <div class="login-card">
+          <div class="brand-mark">AF</div>
+          <p class="eyebrow">AccountFlow</p>
+          <h1>Welcome back</h1>
+          <p class="login-copy">Sign in to manage your profile, identity details, and uploaded documents.</p>
+
+          <button class="google-button" type="button" id="googleLogin">
+            <svg><use href="#icon-google"></use></svg>
+            <span>Sign in with Google (Gmail)</span>
+          </button>
+
+          <div class="divider"><span>or continue with email</span></div>
+
+          <form class="login-form" id="loginForm">
+            <label class="field">
+              <span>Email address</span>
+              <span class="input-wrap">
+                <svg><use href="#icon-mail"></use></svg>
+                <input id="loginEmail" name="loginEmail" type="email" placeholder="Enter your email" autocomplete="email" required />
+              </span>
+            </label>
+            <label class="field">
+              <span>Password</span>
+              <span class="input-wrap">
+                <svg><use href="#icon-lock"></use></svg>
+                <input id="loginPassword" name="loginPassword" type="password" placeholder="Enter your password" autocomplete="current-password" required />
+              </span>
+            </label>
+            <div class="form-row">
+              <label class="remember"><input type="checkbox" checked /> Remember me</label>
+              <a href="#">Forgot password?</a>
+            </div>
+            <button class="primary-button" type="submit">Log in</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="dashboard-screen hidden" id="dashboardScreen" aria-label="Profile dashboard">
+        <aside class="sidebar" id="sidebar">
+          <div class="sidebar-brand">
+            <div class="brand-mark compact">AF</div>
+            <span>AccountFlow</span>
+          </div>
+          <nav class="side-nav" aria-label="Main navigation">
+            <a class="nav-item active" href="#" data-view="dashboardView"><svg><use href="#icon-dashboard"></use></svg>Dashboard</a>
+            <a class="nav-item" href="#" data-view="profileView"><svg><use href="#icon-user"></use></svg>Profile</a>
+            <a class="nav-item" href="#" data-view="settingsView"><svg><use href="#icon-settings"></use></svg>Settings</a>
+            <a class="nav-item" href="#" id="logoutLink"><svg><use href="#icon-log-out"></use></svg>Logout</a>
+          </nav>
+        </aside>
+
+        <div class="content-area">
+          <header class="topbar">
+            <button class="icon-button mobile-menu" id="menuButton" aria-label="Open navigation">
+              <svg><use href="#icon-menu"></use></svg>
+            </button>
+            <div>
+              <p class="eyebrow" id="pageEyebrow">Dashboard</p>
+              <h2 id="pageTitle">Account overview</h2>
+            </div>
+            <div class="top-actions">
+              <button class="icon-button" aria-label="Notifications">
+                <svg><use href="#icon-bell"></use></svg>
+                <span class="dot"></span>
+              </button>
+              <div class="mini-profile">
+                <span class="mini-avatar" aria-hidden="true"><svg><use href="#icon-user"></use></svg></span>
+                <span id="topbarName">User</span>
+              </div>
+            </div>
+          </header>
+
+          <section class="page-view active-view" id="dashboardView" aria-label="Dashboard overview">
+            <div class="dashboard-hero">
+              <div>
+                <p class="eyebrow">Main section</p>
+                <h1 id="heroTitle">Welcome to your account</h1>
+                <p>Open the Profile page to add your personal information, ID details, documents, and profile photo.</p>
+              </div>
+              <button class="primary-button" type="button" data-open-profile>
+                <svg><use href="#icon-user"></use></svg>
+                Open profile
+              </button>
+            </div>
+
+            <div class="summary-grid">
+              <article class="summary-card">
+                <span><svg><use href="#icon-mail"></use></svg></span>
+                <p>Email account</p>
+                <strong id="summaryEmail">Not signed in</strong>
+              </article>
+              <article class="summary-card">
+                <span><svg><use href="#icon-id"></use></svg></span>
+                <p>ID number</p>
+                <strong id="summaryId">Not added</strong>
+              </article>
+              <article class="summary-card">
+                <span><svg><use href="#icon-user"></use></svg></span>
+                <p>Profile status</p>
+                <strong id="summaryStatus">Incomplete</strong>
+              </article>
+            </div>
+          </section>
+
+          <section class="page-view" id="profileView" aria-label="Personal information">
+          <div class="dashboard-grid">
+            <section class="profile-card avatar-panel">
+              <div class="avatar-upload">
+                <img class="avatar-preview hidden" id="avatarPreview" alt="Profile preview" />
+                <span class="avatar-placeholder" id="avatarPlaceholder" aria-hidden="true"><svg><use href="#icon-user"></use></svg></span>
+                <button class="edit-avatar" id="editAvatar" type="button" aria-label="Edit profile photo">
+                  <svg><use href="#icon-camera"></use></svg>
+                </button>
+                <input class="avatar-input" id="avatarInput" name="avatarInput" type="file" accept="image/*" />
+              </div>
+              <h3 id="profileCardName">New user</h3>
+              <p>Add your details to complete your profile</p>
+              <div class="progress-bar"><span class="empty" id="profileProgress"></span></div>
+              <small id="profileStrength">Profile strength 0%</small>
+            </section>
+
+            <form class="profile-card profile-form" id="profileForm">
+              <div class="section-heading">
+                <div>
+                  <p class="eyebrow">Personal information</p>
+                  <h3>User profile</h3>
+                </div>
+                <button class="primary-button save-top" type="submit">
+                  <svg><use href="#icon-save"></use></svg>
+                  Save
+                </button>
+              </div>
+
+              <div class="form-grid">
+                <label class="field">
+                  <span>Full name</span>
+                  <span class="input-wrap">
+                    <svg><use href="#icon-user"></use></svg>
+                    <input id="fullName" name="fullName" type="text" placeholder="Enter full name" />
+                  </span>
+                </label>
+                <label class="field">
+                  <span>Email</span>
+                  <span class="input-wrap disabled">
+                    <svg><use href="#icon-mail"></use></svg>
+                    <input id="email" name="email" type="email" placeholder="Auto-filled after login" readonly />
+                  </span>
+                </label>
+                <label class="field">
+                  <span>Phone number</span>
+                  <span class="input-wrap">
+                    <svg><use href="#icon-phone"></use></svg>
+                    <input id="phone" name="phone" type="tel" placeholder="Enter phone number" />
+                  </span>
+                </label>
+                <label class="field">
+                  <span>Government ID / ID number</span>
+                  <span class="input-wrap">
+                    <svg><use href="#icon-id"></use></svg>
+                    <input id="governmentId" name="governmentId" type="text" placeholder="Enter ID number" />
+                  </span>
+                </label>
+                <label class="field">
+                  <span>Date of birth</span>
+                  <span class="input-wrap">
+                    <svg><use href="#icon-calendar"></use></svg>
+                    <input id="dateOfBirth" name="dateOfBirth" type="date" />
+                  </span>
+                </label>
+                <label class="field">
+                  <span>Gender</span>
+                  <span class="input-wrap">
+                    <svg><use href="#icon-user"></use></svg>
+                    <select id="gender" name="gender">
+                      <option selected value="">Select gender</option>
+                      <option>Female</option>
+                      <option>Male</option>
+                      <option>Non-binary</option>
+                      <option>Prefer not to say</option>
+                    </select>
+                  </span>
+                </label>
+              </div>
+
+              <div class="address-section">
+                <div class="section-label">
+                  <svg><use href="#icon-map"></use></svg>
+                  <span>Address</span>
+                </div>
+                <div class="form-grid address-grid">
+                  <label class="field wide">
+                    <span>Street</span>
+                    <span class="input-wrap">
+                      <input id="street" name="street" type="text" placeholder="Enter street address" />
+                    </span>
+                  </label>
+                  <label class="field">
+                    <span>City</span>
+                    <span class="input-wrap">
+                      <input id="city" name="city" type="text" placeholder="Enter city" />
+                    </span>
+                  </label>
+                  <label class="field">
+                    <span>State</span>
+                    <span class="input-wrap">
+                      <input id="state" name="state" type="text" placeholder="Enter state" />
+                    </span>
+                  </label>
+                  <label class="field">
+                    <span>Zip code</span>
+                    <span class="input-wrap">
+                      <input id="zipCode" name="zipCode" type="text" placeholder="Enter zip code" />
+                    </span>
+                  </label>
+                </div>
+              </div>
+
+              <label class="field">
+                <span>Bio / description</span>
+                <span class="textarea-wrap">
+                  <textarea id="bio" name="bio" rows="4" placeholder="Write a short bio"></textarea>
+                </span>
+              </label>
+
+              <label class="document-upload">
+                <svg><use href="#icon-upload"></use></svg>
+                <span>
+                  <strong>Upload documents</strong>
+                  <small>PDF, PNG, or JPG up to 10 MB</small>
+                </span>
+                <input id="documents" name="documents" type="file" multiple />
+              </label>
+
+              <p class="save-message" id="saveMessage" role="status" aria-live="polite"></p>
+
+              <button class="primary-button update-button" type="submit">
+                <svg><use href="#icon-save"></use></svg>
+                Save / Update profile
+              </button>
+            </form>
+          </div>
+          </section>
+
+          <section class="page-view" id="settingsView" aria-label="Settings">
+            <div class="settings-layout">
+              <article class="profile-card settings-card">
+                <p class="eyebrow">Settings</p>
+                <h3>Account storage</h3>
+                <p>Your personal information is saved only in this browser. Each email address keeps its own profile record, and the ID number is stored with that same email profile.</p>
+              </article>
+              <article class="profile-card settings-card">
+                <p class="eyebrow">Quick action</p>
+                <h3>Edit details</h3>
+                <p>Use the Profile page to update your photo, personal information, address, ID number, and documents.</p>
+                <button class="primary-button" type="button" data-open-profile>
+                  <svg><use href="#icon-user"></use></svg>
+                  Open personal information
+                </button>
+              </article>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
